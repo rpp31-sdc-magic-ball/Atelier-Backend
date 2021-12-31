@@ -36,12 +36,13 @@ const getQuestions = (id, count) => {
 
 // getQuestions(1).then(res => console.log(res));
 
-const getAnswers = (id) => {
+const getAnswers = (id, count) => {
   return new Promise((resolve, reject) => {
     Answers.findAll({
         where: {
           question_id: id
-        }
+        },
+        limit: count
       }).then((answers) => {
         if (answers.length === 0) {
           resolve({})
@@ -79,7 +80,7 @@ const saveQuestion = (data) => {
     asker_name: data.name,
     question_body: data.body,
     email: data.email,
-    productsId: data.productId,
+    productsId: data.product_id,
     reported: false,
     question_helpfulness: '0',
     question_date: new Date()
