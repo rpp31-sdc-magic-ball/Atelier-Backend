@@ -1,12 +1,13 @@
 const { Questions, Answers, Photos } = require('./index.js');
 
 
-const getQuestions = (id) => {
+const getQuestions = (id, count) => {
   return new Promise((resolve, reject) => {
     Questions.findAll({
         where: {
           productsId: id
-        }
+        },
+        limit: count
       }).then((questions) => {
 
         let allQuestions = {

@@ -99,6 +99,3 @@ module.exports = {Questions, Answers, Photos}
 //    console.log(err)
 //  })
 
-// getQuestions(1).then((res) => {
-//   console.log(res.results[0].answers['5'].photos)
-// })
