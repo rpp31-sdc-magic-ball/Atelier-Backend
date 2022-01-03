@@ -1,13 +1,16 @@
 const { Questions, Answers, Photos } = require('./index.js');
+const Sequelize = require('sequelize');
 
 
-const getQuestions = (id, count) => {
+const getQuestions = (productId, count) => {
+  let id = Number(productId)
   return new Promise((resolve, reject) => {
     Questions.findAll({
         where: {
-          productsId: id
+          productsId: id,
+          reported: 0
         },
-        limit: count
+        limit: Number(count)
       }).then((questions) => {
 
         let allQuestions = {
@@ -40,7 +43,8 @@ const getAnswers = (id, count) => {
   return new Promise((resolve, reject) => {
     Answers.findAll({
         where: {
-          question_id: id
+          question_id: id,
+          answer_reported: 0
         },
         limit: count
       }).then((answers) => {
@@ -51,6 +55,13 @@ const getAnswers = (id, count) => {
         for (var i = 0; i < answers.length; i++) {
           let answerId = answers[i].dataValues.answer_id
           let answerObj = answers[i].dataValues;
+          let transformedAnswer = {};
+          transformedAnswer.id = answerId;
+          transformedAnswer.body = answers[i].dataValues.answer_body;
+          transformedAnswer.date = answers[i].dataValues.answer_date;
+          transformedAnswer.helpfulness = answers[i].dataValues.answer_helpfulness;
+          transformedAnswer.photos = answers[i].dataValues.photos;
+          transformedAnswer.answerer_name = answers[i].dataValues.answerer_name;
           Photos.findAll({
             where: {
               answer_id: answerId
@@ -58,10 +69,10 @@ const getAnswers = (id, count) => {
           }).then((res) => {
             let photos = []
             for (var j = 0; j < res.length; j++) {
-              photos.push(res[j].dataValues)
+              photos.push(res[j].dataValues.url)
             }
-            answerObj.photos = photos
-            allAnswers[answerId] = answerObj
+            transformedAnswer.photos = photos
+            allAnswers[answerId] = transformedAnswer
             if (Object.keys(allAnswers).length === answers.length) {
               resolve(allAnswers)
             }
@@ -86,7 +97,10 @@ const saveQuestion = (data) => {
     question_date: new Date()
   }
 
-  Questions.create(question).then(res => console.log('question created!')).catch(err => console.log('err saving question', err))
+ return new Promise((resolve, reject) => {
+    Questions.create(question).then(res => resolve(res)).catch(err => reject(err))
+ });
+
 }
 
 // saveQuestion(question);
@@ -104,9 +118,9 @@ let answer = {
   answer_helpfulness: '0',
   answer_date: new Date(),
 }
-
+return new Promise((resolve, reject) => {
   if (answer.photos.length === 0) {
-    Answers.create(answer).then(res => console.log('answer added')).catch(err => console.log('err saving answer', err))
+    Answers.create(answer).then(res => resolve(res)).catch(err => reject(err))
   } else {
     Answers.create(answer).then((res) => {
       for (var i = 0; i < answer.photos.length; i++) {
@@ -114,27 +128,28 @@ let answer = {
           url: answer.photos[i],
           answer_id: res.dataValues.answer_id
         }
-        Photos.create(photo).then(res => console.log('photo added')).catch(err => console.log(err))
+        Photos.create(photo).then(res => resolve(res)).catch(err => reject(err))
       }
-    }).catch(err => console.log('err saving answer', err))
+    }).catch(err => reject(err))
   }
+});
 }
 
 const questionHelpful = (questionId) => {
   return new Promise((resolve, reject) => {
     Questions.update({
         question_helpfulness: Sequelize.literal('question_helpfulness + 1')
-      }, {
-        where: {
-          question_id: questionId
-        }
-      })
-      .catch((err) => {
+      }, {where: {question_id: questionId}
+      }).then((res) => {
+        console.log('res', res)
+        resolve(res)
+      }).catch((err) => {
+        console.log('errrr', err)
         reject(err)
       })
   })
 }
-// questionHelpful(1);
+// questionHelpful(3518969);
 
 const reportQuestion = (questionId) => {
   return new Promise((resolve, reject) => {
@@ -144,6 +159,9 @@ const reportQuestion = (questionId) => {
       where: {
         question_id: questionId
       }
+    })
+    .then((res) => {
+      resolve(res)
     })
     .catch((err) => {
       reject(err)
@@ -161,6 +179,9 @@ const answerHelpful = (answerId) => {
         answer_id: answerId
       }
     })
+    .then((res) => {
+      resolve(res)
+    })
     .catch((err) => {
       reject(err)
     })
@@ -175,6 +196,8 @@ const reportAnswer = (answerId) => {
       where: {
         answer_id: answerId
       }
+    }).then((res) => {
+      resolve(res)
     })
     .catch((err) => {
       reject(err)

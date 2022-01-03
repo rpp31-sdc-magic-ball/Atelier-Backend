@@ -35,18 +35,5 @@ describe('Route checks', () => {
               expect(JSON.parse(result.text).results[0].productsId).toBe(1);
           });
         });
-  // test('Server does NOT respond to GET requests on other endpoints', () => {
-  //   let requestPromises = [];
-  //   requestPromises.push(request(app)
-  //     .get('/products/')
-  //     .then((res) => {
-  //       expect(res.statusCode).toBe(404);
-  //     }));
-  //   requestPromises.push(request(app)
-  //     .get('/qa/')
-  //     .then((res) => {
-  //       expect(res.statusCode).toBe(404);
-  //     }));
-  //   return Promise.all(requestPromises);
-  // });
+
 });

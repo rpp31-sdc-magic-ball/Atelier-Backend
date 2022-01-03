@@ -14,9 +14,11 @@ app.get('/qa/questions', function (req, res) {
     req.query.count = 5
   }
 
- database.getQuestions(req.query.productId, req.query.count).then((questions) => {
+ database.getQuestions(req.query.product_id, req.query.count).then((questions) => {
+
    res.status(200).send(questions);
  }).catch((err) => {
+   console.log(err)
   res.status(500);
  })
 
@@ -28,6 +30,7 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
   if (!req.params.page) {
     req.params.page = 1
   }
+
   if (!req.params.count) {
     req.params.count = 5
   }
@@ -38,10 +41,10 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
 
 })
 
-app.post('/postQuestion', (req, res) => {
+app.post('/qa/questions', (req, res) => {
 
   database.saveQuestion(req.body).then((result) => {
-    res.status(201);
+    res.status(201).send(result);
   })
   .catch((err) => {
     res.status(500)
@@ -49,29 +52,52 @@ app.post('/postQuestion', (req, res) => {
 
 })
 
-app.post('/postAnswer', (req, res) => {
+app.post('/qa/questions/:question_id/answers', (req, res) => {
+  req.body.questionId = req.params.question_id
   database.saveAnswer(req.body).then((result) => {
-    res.status(201);
+    console.log(result)
+    res.status(201).send(result);
   })
   .catch((err) => {
     res.status(500)
   })
 })
 
-app.put('/questionHelpful', (req, res) => {
-
+app.put('/qa/questions/:question_id/helpful', (req, res) => {
+  database.questionHelpful(req.params.question_id).then((res) => {
+   res.sendStatus(200);
+ })
+ .catch(err => {
+   res.sendStatus(500);
+ })
 })
 
-app.put('/answerHelpful', (req, res) => {
-
+app.put('/qa/answers/:answer_id/helpful', (req, res) => {
+  database.answerHelpful(req.params.answer_id).then(() => {
+    res.sendStatus(200);
+  })
+  .catch(err => {
+    res.sendStatus(500);
+  })
 })
 
-app.put('/reportQuestion', (req, res) => {
-
+app.put('/qa/questions/:question_id/report', (req, res) => {
+  database.reportQuestion(req.params.question_id).then(() => {
+    res.sendStatus(200);
+  })
+  .catch(err => {
+    res.sendStatus(500);
+  })
 })
 
-app.put('/reportAnswer', (req, res) => {
-
+app.put('/qa/answers/:answer_id/report', (req, res) => {
+  database.reportAnswer(req.params.answer_id).then(() => {
+    console.log('reported')
+    res.sendStatus(200);
+  })
+  .catch(err => {
+    res.sendStatus(500);
+  })
 })
 
 
