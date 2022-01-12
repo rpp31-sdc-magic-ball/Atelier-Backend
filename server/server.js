@@ -5,6 +5,8 @@ let app = express();
 
 app.use(parser.json());
 
+database.syncTables()
+
 app.get('/qa/questions', function (req, res) {
 
   if (!req.query.page) {
@@ -18,7 +20,6 @@ app.get('/qa/questions', function (req, res) {
 
    res.status(200).send(questions);
  }).catch((err) => {
-   console.log(err)
   res.status(500);
  })
 
@@ -38,6 +39,9 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
   database.getAnswers(req.params.question_id, req.params.count).then((answers) => {
     res.status(200).send(answers)
   })
+  .catch((err) => {
+    res.status(500)
+  })
 
 })
 
@@ -55,7 +59,6 @@ app.post('/qa/questions', (req, res) => {
 app.post('/qa/questions/:question_id/answers', (req, res) => {
   req.body.questionId = req.params.question_id
   database.saveAnswer(req.body).then((result) => {
-    console.log(result)
     res.status(201).send(result);
   })
   .catch((err) => {
@@ -102,7 +105,7 @@ app.put('/qa/answers/:answer_id/report', (req, res) => {
 
 
 let port = 3055;
-////////////uncomment//////////////////////////////////////////////////////////////////////
+
 app.listen(port, function() {
   console.log(`listening on port ${port}`);
 });

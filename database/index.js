@@ -19,7 +19,7 @@ var Questions = db.define('Questions', {
   question_date: {
     type: Sequelize.DATE
   },
-  productsId: {
+  productId: {
     type: Sequelize.INTEGER
   },
   reported: {
@@ -29,7 +29,13 @@ var Questions = db.define('Questions', {
     type: Sequelize.INTEGER
   },
 }, {
-  timestamps: false
+  timestamps: false,
+  indexes:[
+    {
+      unique: false,
+      fields:['productId']
+    }
+   ]
 });
 
 var Answers = db.define('Answers', {
@@ -60,7 +66,13 @@ var Answers = db.define('Answers', {
     type: Sequelize.INTEGER
   },
 }, {
-  timestamps: false
+  timestamps: false,
+  indexes:[
+    {
+      unique: false,
+      fields:['question_id']
+    }
+   ]
 });
 
 var Photos = db.define('Photos', {
@@ -76,7 +88,13 @@ var Photos = db.define('Photos', {
     type: Sequelize.INTEGER
   }
 }, {
-  timestamps: false
+  timestamps: false,
+  indexes:[
+    {
+      unique: false,
+      fields:['answer_id']
+    }
+   ]
 });
 
 Questions.hasMany(Answers, {foreignKey: 'question_id'});
@@ -85,17 +103,18 @@ Answers.belongsTo(Questions, {foreignKey: 'question_id'});
 Answers.hasMany(Photos, {foreignKey: 'answer_id'});
 Photos.belongsTo(Answers, {foreignKey: 'answer_id'});
 
+
 module.exports = {Questions, Answers, Photos}
 
-// Questions.sync({force: true}).then(() => {
+// Photos.sync({force: true}).then(() => {
 //   console.log('synced')
 //   Answers.sync({force: true}).then(() => {
 //     console.log('answers synced')
-//     Photos.sync({force: true}).then(() => {
+//     Questions.sync({force: true}).then(() => {
 //       console.log('photos synced')
 //     })
 //   })
 //  }).catch((err) => {
-//    console.log(err)
+//    console.log('err')
 //  })
 

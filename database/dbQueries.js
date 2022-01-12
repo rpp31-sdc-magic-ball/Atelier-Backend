@@ -1,13 +1,18 @@
 const { Questions, Answers, Photos } = require('./index.js');
 const Sequelize = require('sequelize');
 
+let syncTables = () => {
+  Questions.sync()
+  Answers.sync()
+  Photos.sync()
+}
 
 const getQuestions = (productId, count) => {
   let id = Number(productId)
   return new Promise((resolve, reject) => {
     Questions.findAll({
         where: {
-          productsId: id,
+          productId: id,
           reported: 0
         },
         limit: Number(count)
@@ -91,7 +96,7 @@ const saveQuestion = (data) => {
     asker_name: data.name,
     question_body: data.body,
     email: data.email,
-    productsId: data.product_id,
+    productId: data.product_id,
     reported: false,
     question_helpfulness: '0',
     question_date: new Date()
@@ -214,5 +219,6 @@ module.exports = {
   questionHelpful,
   reportQuestion,
   answerHelpful,
-  reportAnswer
+  reportAnswer,
+  syncTables
 }
