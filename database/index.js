@@ -103,6 +103,14 @@ Answers.belongsTo(Questions, {foreignKey: 'question_id'});
 Answers.hasMany(Photos, {foreignKey: 'answer_id'});
 Photos.belongsTo(Answers, {foreignKey: 'answer_id'});
 
+let syncTables = () => {
+  Questions.sync()
+  Answers.sync()
+  Photos.sync()
+}
+
+syncTables()
+
 
 module.exports = {Questions, Answers, Photos}
 
