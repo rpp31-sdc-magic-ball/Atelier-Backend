@@ -1,11 +1,16 @@
 const express = require('express');
 const parser = require('body-parser')
 const database = require('../database/dbQueries.js')
+const auth = require('../dbAuth.js')
 let app = express();
 
 app.use(parser.json());
 
-database.syncTables()
+
+app.get('/' + auth.options.loaderIo, (req, res) => {
+  console.log('loaderIO')
+  res.status(200).send(auth.options.loaderIo)
+})
 
 app.get('/qa/questions', function (req, res) {
 

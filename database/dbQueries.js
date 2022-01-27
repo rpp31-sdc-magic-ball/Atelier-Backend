@@ -1,11 +1,6 @@
 const { Questions, Answers, Photos } = require('./index.js');
 const Sequelize = require('sequelize');
 
-let syncTables = () => {
-  Questions.sync()
-  Answers.sync()
-  Photos.sync()
-}
 
 const getQuestions = (productId, count) => {
   let id = Number(productId)
@@ -17,6 +12,9 @@ const getQuestions = (productId, count) => {
         },
         limit: Number(count)
       }).then((questions) => {
+        if (questions.length === 0) {
+          resolve(questions)
+        }
 
         let allQuestions = {
           productId: id,
@@ -37,6 +35,7 @@ const getQuestions = (productId, count) => {
         }
       })
       .catch((err) => {
+        console.log(err)
         reject(err)
       })
   });
@@ -220,5 +219,4 @@ module.exports = {
   reportQuestion,
   answerHelpful,
   reportAnswer,
-  syncTables
 }
